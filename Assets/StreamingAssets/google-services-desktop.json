@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "799535233055",
+    "firebase_url": "https://clicker-2ffbd-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "clicker-2ffbd",
+    "storage_bucket": "clicker-2ffbd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:799535233055:android:be95ca3254d5be2b813d2a",
+        "android_client_info": {
+          "package_name": "com.DefaultCompany.ClickerGameFireBase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "799535233055-kqbdo6d08b0c7608smqdaauel8nte42k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpEwPax7rknXYSP22RiIxFfPysKOIsIDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "799535233055-kqbdo6d08b0c7608smqdaauel8nte42k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:799535233055:android:c8a719bb9c7032e4813d2a",
+        "android_client_info": {
+          "package_name": "com.DefaultCompany.FirebaseClicker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "799535233055-kqbdo6d08b0c7608smqdaauel8nte42k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpEwPax7rknXYSP22RiIxFfPysKOIsIDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "799535233055-kqbdo6d08b0c7608smqdaauel8nte42k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
