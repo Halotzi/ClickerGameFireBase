@@ -7,8 +7,9 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
 
     //Screen object variables
-    public GameObject loginUI;
-    public GameObject registerUI;
+    public GameObject _loginUI;
+    public GameObject _registerUI;
+    public GameObject _dataUI;
 
     private void Awake()
     {
@@ -29,12 +30,19 @@ public class UIManager : MonoBehaviour
     //Functions to change the login screen UI
     public void LoginScreen() //Back button
     {
-        loginUI.SetActive(true);
-        registerUI.SetActive(false);
+        _loginUI.SetActive(true);
+        _dataUI.SetActive(false);
+        _registerUI.SetActive(false);
     }
     public void RegisterScreen() // Regester button
     {
-        loginUI.SetActive(false);
-        registerUI.SetActive(true);
+        _loginUI.SetActive(false);
+        _registerUI.SetActive(true);
+    }
+
+    public void DataScreen()
+    {
+        _loginUI.SetActive(false);
+        _dataUI.SetActive(true);
     }
 }

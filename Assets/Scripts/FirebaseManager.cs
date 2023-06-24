@@ -1,15 +1,17 @@
 using Firebase;
 using Firebase.Auth;
+using Firebase.Database;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 
-public class AuthManager : MonoBehaviour
+public class FirebaseManager : MonoBehaviour
 {
     [Header("Firebase")]
     public DependencyStatus _dependencyStatus;
     public FirebaseAuth _firebaseAuth;
     public FirebaseUser _firebaseUser;
+    public DatabaseReference _databaseReference;
 
     [Header("Login")]
     public TMP_InputField _emailLoginField;
@@ -23,6 +25,11 @@ public class AuthManager : MonoBehaviour
     public TMP_InputField _passwordRegisterField;
     public TMP_InputField _passwordRegisterVerifyField;
     public TMP_Text _warningRegisterText;
+
+    [Header("UserData")]
+    public TMP_Text _usernameName;
+    public TMP_Text _currentScore;
+    public Transform scoreboardContent;
 
     private void Awake()
     {
@@ -49,15 +56,22 @@ public class AuthManager : MonoBehaviour
     {
         Debug.Log("Setting up firebase Auth");
         _firebaseAuth = FirebaseAuth.DefaultInstance;
+        _databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
     }
 
-
-
     #region Login
+
     public void LoginButton()
     {
         StartCoroutine(Login(_emailLoginField.text,_passwordLoginField.text));
     }
+
+    private void ClearLogInFields()
+    {
+        _emailLoginField.text = string.Empty;
+        _passwordLoginField.text = string.Empty;
+    }
+
     private IEnumerator Login(string email, string password)
     {
         var LoginTask = _firebaseAuth.SignInWithEmailAndPasswordAsync(email, password);//Sending the email and passeord
@@ -99,6 +113,13 @@ public class AuthManager : MonoBehaviour
             Debug.LogFormat($"User sign in successfully: {_firebaseUser.DisplayName} , {_firebaseUser.Email}");
             _warningLoginText.text = string.Empty;
             _confirmLoginText.text = "Logged In";
+            StartCoroutine(LoadUserData());
+            yield return new WaitForSeconds(2f);
+            _usernameName.text = _firebaseUser.DisplayName;
+            UIManager.instance.DataScreen();
+            _confirmLoginText.text = string.Empty;
+            ClearLogInFields();
+            ClearRegisterInFields();
 
         }
     }
@@ -107,7 +128,15 @@ public class AuthManager : MonoBehaviour
     #region Register
     public void RegisterButton()
     {
-        StartCoroutine(Register(_emailRegisterField.text, _passwordRegisterField.text, _passwordRegisterField.text));
+        StartCoroutine(Register(_emailRegisterField.text, _passwordRegisterField.text, _usernameRegisterField.text));
+    }
+
+    private void ClearRegisterInFields()
+    {
+        _usernameRegisterField.text = string.Empty;
+        _emailRegisterField.text = string.Empty;
+        _passwordRegisterField.text = string.Empty;
+        _passwordRegisterVerifyField.text = string.Empty;
     }
 
     private IEnumerator Register(string _email, string _password, string _username)
@@ -185,12 +214,81 @@ public class AuthManager : MonoBehaviour
                         //Now return to login screen
                         UIManager.instance.LoginScreen();
                         _warningRegisterText.text = "";
+                        ClearLogInFields();
+                        ClearRegisterInFields();
                     }
                 }
             }
         }
     }
 
-#endregion
+    #endregion
+
+    #region Sign Out
+
+    public void SignOutButton()
+    {
+        _firebaseAuth.SignOut();
+        UIManager.instance.LoginScreen();
+        ClearLogInFields();
+        ClearRegisterInFields();
+    }
+
+    #endregion
+
+    #region Data
+
+    public void SaveDataButton()
+    {
+        int newScore = int.Parse(_currentScore.text);
+        newScore++;
+        _currentScore.text = newScore.ToString();
+       StartCoroutine(UpdateClicks(newScore));
+    }
+
+
+    private IEnumerator LoadUserData()
+    {
+        //Get the currently logged in user data
+        var DBTask = _databaseReference.Child("users").Child(_firebaseUser.UserId).GetValueAsync();
+
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+
+        if (DBTask.Exception != null)
+        {
+            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+        }
+        else if (DBTask.Result.Value == null)
+        {
+            //No data exists yet
+            _currentScore.text = "0";
+        }
+        else
+        {
+            //Data has been retrieved
+            DataSnapshot snapshot = DBTask.Result;
+
+            _currentScore.text = snapshot.Child("clicks").Value.ToString();
+        }
+    }
+
+    private IEnumerator UpdateClicks(int _clicks)
+    {
+        //Set the currently logged in user deaths
+        var DBTask = _databaseReference.Child("users").Child(_firebaseUser.UserId).Child("clicks").SetValueAsync(_clicks);
+
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+
+        if (DBTask.Exception != null)
+        {
+            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+        }
+        else
+        {
+            //Clicks are now updated
+        }
+    }
+
+    #endregion
 
 }
