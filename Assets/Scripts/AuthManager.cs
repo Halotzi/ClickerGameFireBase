@@ -56,7 +56,7 @@ public class AuthManager : MonoBehaviour
     #region Login
     public void LoginButton()
     {
-
+        StartCoroutine(Login(_emailLoginField.text,_passwordLoginField.text));
     }
     private IEnumerator Login(string email, string password)
     {
@@ -107,7 +107,7 @@ public class AuthManager : MonoBehaviour
     #region Register
     public void RegisterButton()
     {
-
+        StartCoroutine(Register(_emailRegisterField.text, _passwordRegisterField.text, _passwordRegisterField.text));
     }
 
     private IEnumerator Register(string _email, string _password, string _username)
@@ -129,7 +129,7 @@ public class AuthManager : MonoBehaviour
             //Wait until the task completes
             yield return new WaitUntil(predicate: () => RegisterTask.IsCompleted);
 
-            if (RegisterTask.Exception != null)
+            if (RegisterTask.Exception is not null)
             {
                 //If there are errors handle them
                 Debug.LogWarning(message: $"Failed to register task with {RegisterTask.Exception}");
@@ -188,10 +188,9 @@ public class AuthManager : MonoBehaviour
                     }
                 }
             }
-
-            #endregion
-
         }
     }
+
+#endregion
 
 }
