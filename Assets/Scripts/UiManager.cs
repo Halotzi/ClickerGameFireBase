@@ -22,6 +22,8 @@ public class UIManager : MonoBehaviour
             Debug.Log("Instance already exists, destroying object!");
             Destroy(this);
         }
+
+        LoginScreen();
     }
 
     //Functions to change the login screen UI
