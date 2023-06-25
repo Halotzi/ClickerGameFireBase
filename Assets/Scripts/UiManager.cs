@@ -7,10 +7,10 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
 
     //Screen object variables
-    public GameObject _loginUI;
-    public GameObject _registerUI;
-    public GameObject _dataUI;
-    public GameObject _scoreboardUI;
+    [SerializeField] private GameObject _loginUI;
+    [SerializeField] private GameObject _registerUI;
+    [SerializeField] private GameObject _dataUI;
+    [SerializeField] private GameObject _scoreboardUI;
 
     private void Awake()
     {

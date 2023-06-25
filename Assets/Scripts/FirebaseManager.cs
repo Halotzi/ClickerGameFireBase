@@ -9,29 +9,29 @@ using UnityEngine;
 public class FirebaseManager : MonoBehaviour
 {
     [Header("Firebase")]
-    public DependencyStatus _dependencyStatus;
-    public FirebaseAuth _firebaseAuth;
-    public FirebaseUser _firebaseUser;
-    public DatabaseReference _databaseReference;
+    private DependencyStatus _dependencyStatus;
+    private FirebaseAuth _firebaseAuth;
+    private FirebaseUser _firebaseUser;
+    private DatabaseReference _databaseReference;
 
     [Header("Login")]
-    public TMP_InputField _emailLoginField;
-    public TMP_InputField _passwordLoginField;
-    public TMP_Text _warningLoginText;
-    public TMP_Text _confirmLoginText;
+    [SerializeField] private TMP_InputField _emailLoginField;
+    [SerializeField] private TMP_InputField _passwordLoginField;
+    [SerializeField] private TMP_Text _warningLoginText;
+    [SerializeField] private TMP_Text _confirmLoginText;
 
     [Header("Register")]
-    public TMP_InputField _usernameRegisterField;
-    public TMP_InputField _emailRegisterField;
-    public TMP_InputField _passwordRegisterField;
-    public TMP_InputField _passwordRegisterVerifyField;
-    public TMP_Text _warningRegisterText;
+    [SerializeField] private TMP_InputField _usernameRegisterField;
+    [SerializeField] private TMP_InputField _emailRegisterField;
+    [SerializeField] private TMP_InputField _passwordRegisterField;
+    [SerializeField] private TMP_InputField _passwordRegisterVerifyField;
+    [SerializeField] private TMP_Text _warningRegisterText;
 
     [Header("UserData")]
-    public TMP_Text _usernameName;
-    public TMP_Text _currentScore;
-    public Transform _scoreboardContent;
-    public GameObject _scoreElementPrefab;
+    [SerializeField] private TMP_Text _usernameName;
+    [SerializeField] private TMP_Text _currentScore;
+    [SerializeField] private Transform _scoreboardContent;
+    [SerializeField] private GameObject _scoreElementPrefab;
 
     private void Awake()
     {
@@ -76,7 +76,7 @@ public class FirebaseManager : MonoBehaviour
 
     private IEnumerator Login(string email, string password)
     {
-        var LoginTask = _firebaseAuth.SignInWithEmailAndPasswordAsync(email, password);//Sending the email and passeord
+        var LoginTask = _firebaseAuth.SignInWithEmailAndPasswordAsync(email, password);//Sending the email and password
         yield return new WaitUntil(predicate: () => LoginTask.IsCompleted); //Wait until the task complete
 
         if (LoginTask.Exception is not null)
@@ -143,7 +143,7 @@ public class FirebaseManager : MonoBehaviour
 
     private IEnumerator Register(string _email, string _password, string _username)
     {
-        if (_username == "")
+        if (_username == "" || _username == string.Empty)
         {
             //If the username field is blank show a warning
             _warningRegisterText.text = "Missing Username";
@@ -264,7 +264,7 @@ public class FirebaseManager : MonoBehaviour
         {
             //No data exists yet
             _currentScore.text = "0";
-            _databaseReference.Child("users").Child(_firebaseUser.UserId).Child("username").SetValueAsync(_firebaseUser.DisplayName);
+            _databaseReference.Child("users").Child(_firebaseUser.UserId).Child("username").SetValueAsync(_firebaseUser.DisplayName); //save to username in field for the scoreboard. Couldnt find username in DataSnapshot so i did that.
         }
         else
         {
@@ -277,7 +277,7 @@ public class FirebaseManager : MonoBehaviour
 
     private IEnumerator UpdateClicks(int _clicks)
     {
-        //Set the currently logged in user deaths
+        //Set the currently logged in user clicks
         var DBTask = _databaseReference.Child("users").Child(_firebaseUser.UserId).Child("clicks").SetValueAsync(_clicks);
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
@@ -299,7 +299,7 @@ public class FirebaseManager : MonoBehaviour
 
     private IEnumerator LoadScoreboardData()
     {
-        //Get all the users data ordered by kills amount
+        //Get all the users data ordered by clicks amount
         var DBTask = _databaseReference.Child("users").OrderByChild("clicks").GetValueAsync();
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
