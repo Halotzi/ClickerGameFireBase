@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     public GameObject _loginUI;
     public GameObject _registerUI;
     public GameObject _dataUI;
+    public GameObject _scoreboardUI;
 
     private void Awake()
     {
@@ -32,6 +33,7 @@ public class UIManager : MonoBehaviour
     {
         _loginUI.SetActive(true);
         _dataUI.SetActive(false);
+        _scoreboardUI.SetActive(false);
         _registerUI.SetActive(false);
     }
     public void RegisterScreen() // Regester button
@@ -43,6 +45,13 @@ public class UIManager : MonoBehaviour
     public void DataScreen()
     {
         _loginUI.SetActive(false);
+        _scoreboardUI.SetActive(false);
         _dataUI.SetActive(true);
+    }
+
+    public void ScoreboardScreen()
+    {
+        _dataUI.SetActive(false);
+        _scoreboardUI.SetActive(true);
     }
 }

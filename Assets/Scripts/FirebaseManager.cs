@@ -2,6 +2,7 @@ using Firebase;
 using Firebase.Auth;
 using Firebase.Database;
 using System.Collections;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -29,7 +30,8 @@ public class FirebaseManager : MonoBehaviour
     [Header("UserData")]
     public TMP_Text _usernameName;
     public TMP_Text _currentScore;
-    public Transform scoreboardContent;
+    public Transform _scoreboardContent;
+    public GameObject _scoreElementPrefab;
 
     private void Awake()
     {
@@ -254,7 +256,7 @@ public class FirebaseManager : MonoBehaviour
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 
-        if (DBTask.Exception != null)
+        if (DBTask.Exception is not null)
         {
             Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
         }
@@ -262,6 +264,7 @@ public class FirebaseManager : MonoBehaviour
         {
             //No data exists yet
             _currentScore.text = "0";
+            _databaseReference.Child("users").Child(_firebaseUser.UserId).Child("username").SetValueAsync(_firebaseUser.DisplayName);
         }
         else
         {
@@ -283,9 +286,51 @@ public class FirebaseManager : MonoBehaviour
         {
             Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
         }
+    }
+
+    #endregion
+
+    #region Scoreboard
+
+    public void ScoreboardButton()
+    {
+        StartCoroutine(LoadScoreboardData());   
+    }
+
+    private IEnumerator LoadScoreboardData()
+    {
+        //Get all the users data ordered by kills amount
+        var DBTask = _databaseReference.Child("users").OrderByChild("clicks").GetValueAsync();
+
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+
+        if (DBTask.Exception is not null)
+            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+
         else
         {
-            //Clicks are now updated
+            //Data has been retrieved
+            DataSnapshot snapshot = DBTask.Result;
+
+            //Destroy any existing scoreboard elements
+            foreach (Transform child in _scoreboardContent.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            //Loop through every users UID
+            foreach (DataSnapshot childSnapshot in snapshot.Children.Reverse<DataSnapshot>())
+            {
+                int clicks = int.Parse(childSnapshot.Child("clicks").Value.ToString());
+                string username = childSnapshot.Child("username").Value.ToString();
+
+                //Instantiate new scoreboard elements
+                GameObject scoreboardElement = Instantiate(_scoreElementPrefab, _scoreboardContent);
+                scoreboardElement.GetComponent<ScoreElement>().NewScoreElement(username, clicks);
+            }
+
+            //Go to scoareboard screen
+            UIManager.instance.ScoreboardScreen();
         }
     }
 
